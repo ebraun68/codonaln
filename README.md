@@ -1,5 +1,8 @@
 # codonaln
-Programs to align sequences while respecting codon structure 
+Programs to align sequences while respecting codon structure.
+
+Two perl programs (one to check frames and one to perform the alignment) and two
+awk programs to convert file formats.
 
 --------------------------------------------------------------------------------
 # checkframe.pl
@@ -11,8 +14,19 @@ sequence in frame (with frame information appended to the sequence name) and a
 tab-delimited file with the numbers of stop codons in each frame as well as the
 number of "problematic" codons.
 
+Typical usage is:
+
 ```
-Usage:
+perl checkframe.pl input.tbl output STD
+```
+
+This reads the input file (input.tbl), counts the number of stop codons in each frame
+(assuming the standard genetic code), and outputs a fasta file (output.bestframe.fasta)
+with each sequence in the best frame as well as a tab-delimited file (output.frames.txt)
+with the numbers of stop codons in each frame. The "best frame" is the one with the 
+minimum number of stop codons. Full usage is:
+
+```
   $ checkframe.pl <infile> <outfile> <STOP1> <STOP2> <STOP3> <STOP4>
    The first two arguments are mandatory
       infile  = tab-delimited table of sequence names and sequences
@@ -30,17 +44,6 @@ Usage:
           Up to eight stop codons (including ambiguities) can be specified
 ```
 
-Typical usage is:
-
-```
-perl checkframe.pl input.tbl output STD
-```
-
-This reads the input file (input.tbl), counts the number of stop codons in each frame,
-and outputs a fasta file (output.bestframe.fasta) with each sequence in the best frame 
-as well as a tab-delimited file (output.frames.txt) with the numbers of stop codons in
-each frame. The "best frame" is the one with the minimum number of stop codons.
-
 The input format is a table with two columns. The first column is the taxon name
 (without any internal whitespace) and the second is the nucleotide sequence. A fasta
 file can be converted into this tabular format as follows:
@@ -50,6 +53,7 @@ awk -f fasta2tbl.awk fastafile > tblfile
 ```
 
 The tab-delimited output file has 15 columns:
+```
 1.  Name
 2.  F1stop
 3.  F1gap
@@ -65,6 +69,7 @@ The tab-delimited output file has 15 columns:
 13. R3gap
 14. Best_frame
 15. MinStops
+```
 
 as well as a tab-delimited file (output.frames.txt) with the numbers of stop codons in
 Column 1 is the name, columns 2-7 are the numbers of problem codons for the 3 forward
