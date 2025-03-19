@@ -52,7 +52,20 @@ file can be converted into this tabular format as follows:
 awk -f fasta2tbl.awk fastafile > tblfile
 ```
 
-The tab-delimited output file has 15 columns:
+The .bestframe.fasta output file has the best frame added to each name and, if the best
+frame is not in the first forward frame, the 5' end of the sequence will be padded with N's.
+If the sequence length is not a multiple of 3 the 3' end of the sequence will be padded
+with N's.
+
+The .frames.txt output file is tab-delimited text. Column 1 is the sequence name, columns
+2-7 are the numbers of problem codons for the 3 forward frames, columns 8-13 are the 
+numbers of problem codons for the 3 reverse frames, Column 14 is the best frame (the frame 
+with the minimum number of stop codons) and column 15 is the minimum number of stop codons 
+in any frame. "stop" is the number of stop codons (ideally 0 or 1) and "gap" is the number 
+codons with one or two gaps (the "gap" counts is useful for assessing alignments it will be 
+0 for unaligned sequences).
+
+In full, the 15 columns are:
 1.  Name
 2.  F1stop
 3.  F1gap
@@ -69,13 +82,6 @@ The tab-delimited output file has 15 columns:
 14. Best_frame
 15. MinStops
 
-as well as a tab-delimited file (output.frames.txt) with the numbers of stop codons in
-Column 1 is the name, columns 2-7 are the numbers of problem codons for the 3 forward
-frames, columns 8-13 are the numbers of problem codons for the 3 reverse frames, Column
-14 is the best frame (the frame with the minimum number of stop codons) and column 15
-is the minimum number of stop codons in any frame. "stop" is the number of stop codons
-(ideally 0 or 1) and "gap" is the number codons with one or two gaps (the "gap" counts
-is useful for assessing alignments it will be 0 for unaligned sequences).
-
 The input file can also be a single line relaxed phylip file without the header (i.e.,
 the file produced by tail -n +2 input.phy > input.tbl).
+
