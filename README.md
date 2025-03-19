@@ -5,14 +5,20 @@ Two perl programs (one to check frames and one to perform the alignment) and two
 awk programs to convert file formats.
 
 --------------------------------------------------------------------------------
-# checkframe.pl
+### checkframe.pl
 
-A simple perl program to examine a set of sequences and identify the best
-reading frame. Reads a table of nucleotide sequences and count the number of
-stop codons. Outputs a fasta file with each sequence "padded" with N's to put the
-sequence in frame (with frame information appended to the sequence name) and a
-tab-delimited file with the numbers of stop codons in each frame as well as the
-number of "problematic" codons.
+A simple perl program to examine a set of sequences and identify the best reading
+frame for each sequence. The best frame is chosen by minimizing the number of stop
+codons.
+
+This program reads a tab-delimited table of nucleotide sequences and counts the number
+of stop codons. The tabular input format can be generated from a fasta file using the 
+fasta2tbl.awk program (see below). The program outputs a fasta file with the best frame
+for each sequence indicated. If necessary, the ends of the sequences in the fasta output
+file will be "padded" with N's to create a sequence where the first nucleotide is the
+first position of a codon and the sequence lenght is a multiple of three. The program
+also generate a tab-delimited file with the numbers of stop codons in each frame as well 
+as the number of "problematic" codons (see below for details).
 
 Typical usage is:
 
