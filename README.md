@@ -53,7 +53,6 @@ awk -f fasta2tbl.awk fastafile > tblfile
 ```
 
 The tab-delimited output file has 15 columns:
-```
 1.  Name
 2.  F1stop
 3.  F1gap
@@ -69,7 +68,6 @@ The tab-delimited output file has 15 columns:
 13. R3gap
 14. Best_frame
 15. MinStops
-```
 
 as well as a tab-delimited file (output.frames.txt) with the numbers of stop codons in
 Column 1 is the name, columns 2-7 are the numbers of problem codons for the 3 forward
