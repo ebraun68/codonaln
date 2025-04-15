@@ -77,9 +77,6 @@ if ( @ARGV > 3 ) {
 	if ( $ARGV[3] eq "--multiclean" || $ARGV[3] eq "-MC" ) { $multiline=1; $clean=1; }
 }
 
-print 
-
-
 ############################################################################
 # Hash for genetic code (standard code)
 #   NOTE: most third position ambiguities will yield the correct amino acid
