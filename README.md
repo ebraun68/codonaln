@@ -5,6 +5,28 @@ Two perl programs (one to check frames and one to perform the alignment) and two
 awk programs to convert file formats.
 
 --------------------------------------------------------------------------------
+### codon_align.pl
+
+A perl program that translates a set of nucleotide sequences passed as a fasta file,
+aligns the amino acid sequences using muscle (https://www.drive5.com/muscle/) or mafft 
+(https://mafft.cbrc.jp/), and uses the amino acid alignment to produce a codon level
+alignment.
+
+Minimal usage is:
+
+```
+perl codon_align.pl input.fasta output
+```
+
+The minimal usage assumes that the fasta input file
+
+<pre>
+>Example sequence
+NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTA
+TGACCGGTACATTGCCATCTGCAAACC
+<\pre>
+  
+--------------------------------------------------------------------------------
 ### checkframe.pl
 
 A simple perl program to examine a set of sequences and identify the best reading
