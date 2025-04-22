@@ -13,6 +13,11 @@ aligns the amino acid sequences using muscle (https://www.drive5.com/muscle/) or
 alignment. The program defaults to muscle. The path to the alignment programs must be
 muscle or mafft (although this can be changed).
 
+The philosopy of this program is to tolerate ambiguous codons and stop codons. They 
+are translated as X in the file used as input for the aligner. Some analytical programs
+do not tolerate in frame stop codons, so users should exercise caution if any are
+present in the alignment.
+
 Minimal usage is:
 
 ```
@@ -40,8 +45,8 @@ You should use the multiline fasta mode:
 perl codon_align.pl input.fasta output -M
 ```
 
-This will convert the input fasta file to a single line fasta file and then proceed with
-the alignment.
+In multiline fasta mode the will convert the input fasta file to a single line fasta file
+and then proceed with the translation and alignment.
 
 
   
