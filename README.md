@@ -10,7 +10,8 @@ awk programs to convert file formats.
 A perl program that translates a set of nucleotide sequences passed as a fasta file,
 aligns the amino acid sequences using muscle (https://www.drive5.com/muscle/) or mafft 
 (https://mafft.cbrc.jp/), and uses the amino acid alignment to produce a codon level
-alignment.
+alignment. The program defaults to muscle. The path to the alignment programs must be
+muscle or mafft (although this can be changed).
 
 Minimal usage is:
 
@@ -18,13 +19,31 @@ Minimal usage is:
 perl codon_align.pl input.fasta output
 ```
 
-The minimal usage assumes that the fasta input file
+The minimal usage assumes that the fasta input file has a single line, like this:
 
-<code>
->Example sequence
+```
+>Example_sequence
+NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTATGACCGGTACATTGCCATCTGCAAACC
+```
+
+If your input fasta file has endlines embedded like this:
+
+```
+>Example_sequence
 NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTA
 TGACCGGTACATTGCCATCTGCAAACC
-<\code>
+```
+
+You should use the multiline fasta mode:
+
+```
+perl codon_align.pl input.fasta output -M
+```
+
+This will convert the input fasta file to a single line fasta file and then proceed with
+the alignment.
+
+
   
 --------------------------------------------------------------------------------
 ### checkframe.pl
