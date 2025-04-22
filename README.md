@@ -20,11 +20,11 @@ perl codon_align.pl input.fasta output
 
 The minimal usage assumes that the fasta input file
 
-<pre>
+<code>
 >Example sequence
 NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTA
 TGACCGGTACATTGCCATCTGCAAACC
-<pre>
+<\code>
   
 --------------------------------------------------------------------------------
 ### checkframe.pl
