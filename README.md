@@ -24,7 +24,7 @@ The minimal usage assumes that the fasta input file
 >Example sequence
 NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTA
 TGACCGGTACATTGCCATCTGCAAACC
-<\pre>
+<pre>
   
 --------------------------------------------------------------------------------
 ### checkframe.pl
