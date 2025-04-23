@@ -89,7 +89,7 @@ program and different extensions:
 <outfile>.codon.alignment.phy   -- codon aligned sequences (phylip format)
 ```
 
-Note that the phylip format codon is alignment is actually related phylip (long sequence names 
+Note that the phylip format codon alignment is actually relaxed phylip format (long sequence names 
 are tolerated) with all nucleotides on a single line. 
 
 The seq_summary.txt file is a tab-delimited text file with five columns: 1. Sequence name (Name), 
