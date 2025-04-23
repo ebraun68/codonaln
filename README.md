@@ -1,8 +1,9 @@
 # codonaln
 Programs to align sequences while respecting codon structure.
 
-Two perl programs (one to check frames and one to perform the alignment) and two
-awk programs to convert file formats.
+Two perl programs (to perform the alignment and one to check frames) and two
+awk programs to convert file formats. Both should work in *nix environments, 
+including MacOS.
 
 --------------------------------------------------------------------------------
 ### codon_align.pl
@@ -16,17 +17,31 @@ muscle or mafft, although this can be changed (see below). The program can also 
 protein sequence alignment supplied by the user.
 
 The philosopy of this program is to tolerate ambiguous codons and stop codons. They 
-are translated as X in the file used as input for the aligner. Some analytical programs
-do not tolerate in frame stop codons, so users should exercise caution if any are
-present in the alignment. The program uses the standard genetic code: https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1)
+are translated as X in the file used as input for the aligner. This philosophy means
+that the user must check the reading frames of the input file of unaligned nucleotide
+sequences. The program assumes the first position of the input nucleotide fasta file
+is a first codon position and that the lengths of all input sequences are a multiple of
+three. The checkframe.pl program can can be used to check sequences and it will output 
+a file with the ends of the sequences padded with N's to create seqeunces with the 
+correct lengths (checkframe.pl minimizes the number of in frame stop codons to choose
+the appropriate frame). Note that the tolerance of stop codons means that the alignments
+are useful for phylogenetic analyses of nucleotides but some analytical programs (e.g.,
+programs to estimate the dN/dS ratio) do not tolerate in frame stop codons. Therefore, 
+users should exercise caution if any stop codons are present in the alignment. 
 
-Minimal usage is:
+coodonaln.pl uses the standard genetic code: https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1), 
+although an alternative genetic code can be substituted by altering the hash called %stdgencode. 
+checkframe.pl focuses on stop codons and the relevant set of stop codons is supplied by 
+the user, so it does not use a specific code.
+
+Minimal usage of codon_align.pl is:
 
 ```
 perl codon_align.pl input.fasta output
 ```
 
-The minimal usage assumes that the fasta input file has a single line, like this:
+The minimal command defaults to muscle v3 as an aligner and it assumes that the fasta input 
+file has a single line, like this:
 
 ```
 >Example_sequence
@@ -52,27 +67,46 @@ perl codon_align.pl input.fasta output -MC
 ```
 
 Both multiline fasta modes will convert the input fasta file to a single line fasta file
-before proceeding with the translation and alignment. Clean multiline fasta mode will
-remove the single line fasta file.
+before proceeding with the translation and alignment. The clean multiline fasta mode will
+remove the single line fasta file. Note that multiline mode does not alter a single line 
+fasta file, so routinely using -MC will allow the program to use either type of file without 
+saving any new files.
 
-To use mafft or version 5 of muscle the user must specify the alignment method:
+## Alignment programs
+
+The default alignment program is version 3 of muscle (the program has been tested with 
+muscle v3.8.31). The system call for muscle is: muscle -in unaligned.faa -out aligned.faa 
+(where unaligned.faa are aligned.faa the names for the protein fasta files). The other 
+alignment programs are used as follows (I have assumed that the program is run in -MC mode, 
+which is robust to single line or multiline fasta files):
+
+# 1. mafft -
+Align using the command: mafft --auto unaligned.faa > aligned.faa
 
 ```
-perl codon_align.pl input.fasta output --mafft -M
+perl codon_align.pl input.fasta output --mafft -MC
 ```
-or
+
+# 2. muscle v5 with align mode -
+Align using the command: muscle -align unaligned.faa -output aligned.faa
+
 ```
-perl codon_align.pl input.fasta output --muscle5 -M
+perl codon_align.pl input.fasta output --muscle5 -MC
 ```
-or
+
+# 3. muscle v5 with super5 mode -
+Align using the command: muscle -super5 unaligned.faa -output aligned.faa
+(-super5 can be used with large alignments when -align is too slow)
+
 ```
-perl codon_align.pl input.fasta output --super5 -M
+perl codon_align.pl input.fasta output --super5 -MC
 ```
-(--muscle5 uses muscle in -align mode whereas --super5 uses the faster muscle -super5 mode)
 
 Note that the paths to the aligners (stored in the variables $muscleexec, $muscle5exec, and 
 $mafftexec) may need to be changed, depending on the locations and names of the relevant
 programs on your system.
+
+# 4. User supplied protein alignment -
 
 The aligner can also be used with user supplied protein sequence alignment, as follows:
 
@@ -80,11 +114,11 @@ The aligner can also be used with user supplied protein sequence alignment, as f
 perl codon_align.pl input.fasta output --protaln TESTatp1.protaln.faa -MC
 ```
 
-The protein alignment passed with --protaln must be in aligned fasta format and it must not have
-the same name as the the aligned protein outfile (the program will print an error message and exit
-if this is the case). The program will check whether the alignment file exists but it will not 
-perform more detailed checks. If the codon aligment appears problematic you should check the protein
-alignment passed with --protaln.
+The protein alignment passed with --protaln must be in aligned fasta format and it must 
+not have the same name as the the aligned protein outfile (the program will print an error 
+message and exit if this is the case). The program will check whether the alignment file 
+exists but it will not perform more detailed checks. If the codon aligment appears problematic 
+you should check the protein alignment passed with --protaln.
 
 
 --------------------------------------------------------------------------------
