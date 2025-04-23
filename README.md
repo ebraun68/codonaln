@@ -72,6 +72,23 @@ remove the single line fasta file. Note that multiline mode does not alter a sin
 fasta file, so routinely using -MC will allow the program to use either type of file without 
 saving any new files.
 
+#### Output files
+
+The program has five output files. They are named using the <outfile> name passed to the 
+program and different extensions:
+
+```
+<outfile>.unaligned.faa         -- amino acid sequences (fasta format)
+<outfile>.aligned.faa           -- aligned amino acid sequences (fasta format)
+<outfile>.seq_summary.txt       -- summary of sequence lengths and errors
+<outfile>.codon.alignment.fasta -- codon aligned sequences (fasta format)
+<outfile>.codon.alignment.phy   -- codon aligned sequences (phylip format)
+```
+
+Note that the phylip format codon is alignment is actually related phylip (long sequence names 
+are tolerated) with all nucleotides on a single line. 
+
+
 #### Alignment programs
 
 The default alignment program is version 3 of muscle (the program has been tested with 
@@ -120,6 +137,41 @@ message and exit if this is the case). The program will check whether the alignm
 exists but it will not perform more detailed checks. If the codon aligment appears problematic 
 you should check the protein alignment passed with --protaln.
 
+#### Help message
+
+If you call the program without the minimal command line arguments the program will print 
+a help message and exit:
+
+```
+Usage:
+  $ codon_align.pl <infile> <outfile> OPTIONAL: [aligner] [--protaln filename] [-M or --multiline]
+   The first two arguments are mandatory
+      infile  = single line aligned fasta infile
+      outfile = prefix for output files
+      - This program will write five output files:
+          <outfile>.unaligned.faa         -- amino acid sequences
+          <outfile>.aligned.faa           -- aligned amino acid sequences
+          <outfile>.seq_summary.txt       -- summary of sequence lengths and errors
+          <outfile>.codon.alignment.fasta -- codon aligned sequences (fasta format)
+          <outfile>.codon.alignment.phy   -- codon aligned sequences (phylip format)
+   The third and fourth arguments are optional
+      - muscle (v3) is the default aligner (can also specified using --muscle3)
+      - mafft can be specified using --mafft
+      - muscle v5 align mode can be specified using --muscle5
+      - muscle v5 super5 mode can be specified using --super5
+      - pass --protaln followed by a filename to use an existing protein alignment 
+
+      - use --translate to translate sequences without aligning
+      - use --check to assess numbers of in frame stop codons without aligning sequences
+      - use --translate to translate sequences without aligning
+
+      - If -M or --multiline is passed the input file can be a multiline fasta file
+      - The multiline fasta file will be converted to singleline and saved with the
+        the filename infile.singleline
+      - If you want to use a multiline input file but do not want to save a the singleline
+        file use the clean multiline mode by passing -MC or --multiclean
+exiting...
+```
 
 --------------------------------------------------------------------------------
 ### checkframe.pl
