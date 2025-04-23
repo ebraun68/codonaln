@@ -16,8 +16,9 @@ use POSIX;
 my($progname) = $0;
 
 # paths to aligners (may need to change)
-my($muscleexec) = "muscle";
-my($mafftexec)  = "mafft";
+my($muscleexec)  = "muscle";
+my($muscle5exec) = "muscle";
+my($mafftexec)   = "mafft";
 
 ############################################################################
 # Initialize variables
@@ -35,8 +36,8 @@ my($tval2);
 my($tstring);
 my @temparray;
 
-if ( @ARGV < 2 || @ARGV > 5 ) {
-	print "Usage:\n  \$ $progname <infile> <outfile> OPTIONAL: [aligner] [-M or --multiline]\n";
+if ( @ARGV < 2 || @ARGV > 6 ) {
+	print "Usage:\n  \$ $progname <infile> <outfile> OPTIONAL: [aligner] [--protaln filename] [-M or --multiline]\n";
 	print "   The first two arguments are mandatory\n";
 	print "      infile  = single line aligned fasta infile\n";
 	print "      outfile = prefix for output files\n";
@@ -47,10 +48,15 @@ if ( @ARGV < 2 || @ARGV > 5 ) {
 	print "          <outfile>.codon.alignment.fasta -- codon aligned sequences (fasta format)\n";
 	print "          <outfile>.codon.alignment.phy   -- codon aligned sequences (phylip format)\n";
 	print "   The third and fourth arguments are optional\n";
-	print "      - muscle is the default aligner (can also specified using --muscle)\n";
+	print "      - muscle (v3) is the default aligner (can also specified using --muscle3)\n";
 	print "      - mafft can be specified using --mafft\n";
+	print "      - muscle v5 align mode can be specified using --muscle5\n";
+	print "      - muscle v5 super5 mode can be specified using --super5\n";
+	print "      - pass --protaln followed by a filename to use an existing protein alignment \n";
+	print "\n      - use --translate to translate sequences without aligning\n";
 	print "      - use --check to assess numbers of in frame stop codons without aligning sequences\n";
-	print "      - If -M or --multiline is passed the input file can be a multiline fasta file\n";
+	print "      - use --translate to translate sequences without aligning\n";
+	print "\n      - If -M or --multiline is passed the input file can be a multiline fasta file\n";
 	print "      - The multiline fasta file will be converted to singleline and saved with the\n";
 	print "        the filename infile.singleline\n";
 	print "      - If you want to use a multiline input file but do not want to save a the singleline\n";
@@ -64,18 +70,70 @@ my($outfile) = $ARGV[1];
 my($aligner) = "muscle";
 my($multiline) = 0;
 my($clean)     = 0;
+my($protalnfile);
 if ( @ARGV > 2 ) {
 	if ( $ARGV[2] eq "--mafft" ) { $aligner="mafft"; }
+	if ( $ARGV[2] eq "--muscle5" ) { $aligner="muscle5"; }
+	if ( $ARGV[2] eq "--super5" ) { $aligner="super5"; }
+	if ( $ARGV[2] eq "--protaln" ) { 
+		$aligner="protaln";
+		if ( @ARGV < 4 ) {
+			print "ERROR: a protein alignment file name is necessary to run in --protaln mode\n";
+			print "exiting...\n";
+			exit;
+		}
+		$protalnfile = $ARGV[3];
+		if ( ! -e $protalnfile ) {
+			print "ERROR: protein alignment file $protalnfile does not exist\n";
+			print "exiting...\n";
+			exit;
+		}
+	}
 	if ( $ARGV[2] eq "--check" ) { $aligner="check"; }
+	if ( $ARGV[2] eq "--translate" ) { $aligner="translate"; }
 	if ( $ARGV[2] eq "--multiline" || $ARGV[2] eq "-M" ) { $multiline=1; }
 	if ( $ARGV[2] eq "--multiclean" || $ARGV[2] eq "-MC" ) { $multiline=1; $clean=1; }
 }
 if ( @ARGV > 3 ) {
 	if ( $ARGV[3] eq "--mafft" ) { $aligner="mafft"; }
+	if ( $ARGV[3] eq "--muscle5" ) { $aligner="muscle5"; }
+	if ( $ARGV[3] eq "--super5" ) { $aligner="super5"; }
+	if ( $ARGV[3] eq "--protaln" ) { 
+		$aligner="protaln";
+		if ( @ARGV < 5 ) {
+			print "ERROR: a protein alignment file name is necessary to run in --protaln mode\n";
+			print "exiting...\n";
+			exit;
+		}
+		$protalnfile = $ARGV[4];
+		if ( ! -e $protalnfile ) {
+			print "ERROR: protein alignment file $protalnfile does not exist\n";
+			print "exiting...\n";
+			exit;
+		}
+	}
 	if ( $ARGV[3] eq "--check" ) { $aligner="check"; }
+	if ( $ARGV[3] eq "--translate" ) { $aligner="translate"; }
 	if ( $ARGV[3] eq "--multiline" || $ARGV[3] eq "-M" ) { $multiline=1; }
 	if ( $ARGV[3] eq "--multiclean" || $ARGV[3] eq "-MC" ) { $multiline=1; $clean=1; }
 }
+if ( @ARGV > 4 ) {
+	if ( $ARGV[4] eq "--mafft" ) { $aligner="mafft"; }
+	if ( $ARGV[4] eq "--check" ) { $aligner="check"; }
+	if ( $ARGV[4] eq "--muscle5" ) { $aligner="muscle5"; }
+	if ( $ARGV[4] eq "--super5" ) { $aligner="super5"; }
+	if ( $ARGV[4] eq "--translate" ) { $aligner="translate"; }
+	if ( $ARGV[4] eq "--multiline" || $ARGV[3] eq "-M" ) { $multiline=1; }
+	if ( $ARGV[4] eq "--multiclean" || $ARGV[3] eq "-MC" ) { $multiline=1; $clean=1; }
+}
+
+if ( $aligner eq "protaln" && "$protalnfile" eq "$outfile.aligned.faa" ) {
+	print "ERROR: The alignment used in --protaln mode have the name of an output file\n";
+	print "  -- in this case, the outfile name is $outfile.aligned.faa\n";
+	print "exiting...\n";
+	exit;
+}
+
 
 ############################################################################
 # Hash for genetic code (standard code)
@@ -252,28 +310,38 @@ print "Maximum number of undefined amino acids in any sequence = $maxX\n";
 
 print "\nWARNING: Check sequences with an excessive number of in frame stop codons or undefined amino acids\n";
 
-if ( $aligner eq "check" ) {
+if ( $aligner eq "check" || $aligner eq "translate" ) {
 
-	# Remove the aligned output file if it does not exist
-	system("rm -f $outfile.unaligned.faa");
 	# Clean up the singleline fasta file if mode is --multiclean or -MC
 	if ( $multiline == 1 && $clean == 1 ) { system("rm -f $infile"); }
-	
-	print "\nProgram was run in --check mode to assess sequence quality. Sequences will not be aligned.\n\n";
-	print "NOTE: Running in --check mode only produces one output file:\n";
-	print "         $outfile.seq_summary.txt\n";
-	print "      This file can be used to assess the quality of each sequence\n";
+
+	# Remove the unaligned output file an echo appropriate message if mode is --check
+	if ( $aligner eq "check" ) { 
+		system("rm -f $outfile.unaligned.faa"); 
+		
+		print "\nProgram was run in --check mode to assess sequence quality. Sequences will not be aligned.\n\n";
+		print "NOTE: Running in --check mode only produces one output file:\n";
+		print "         $outfile.seq_summary.txt\n";
+		print "      This file can be used to assess the quality of each sequence\n";		
+	}
+	else { # echo appropriate message if mode is --translate
+		print "\nProgram was run in --translate mode to generate protein sequence. Sequences will not be aligned.\n\n";
+		print "NOTE: Running in --translate mode only produces one output file:\n";
+		print "         $outfile.unaligned.faa\n";
+		print "      This file can be used for other analyses (e.g., input for other aligners)\n";
+	}
+
 	print "\nexiting...\n\n";
-	
 	exit;
 }
 
 ############################################################################
 # Perform the sequence alignment
 ############################################################################
-print "\nSequences will be aligned using $aligner\n\n";
+if ( $aligner eq "protaln" ) { print "\nCodon alignment will be generated using $protalnfile\n"; }
+else { print "\nSequences will be aligned using $aligner\n\n"; }
 
-# Remove the aligned output file if it does not exist
+# Remove the aligned output file if it exists
 system("rm -f $outfile.aligned.faa");
 
 # Additional alignment programs can be added here, but their ultimate output should be
@@ -289,8 +357,30 @@ if ( $aligner eq "mafft" ) {
 		exit;
 	}
 }
+elsif ( $aligner eq "muscle5"  ) { 
+	system("$muscle5exec -align $outfile.unaligned.faa -output $outfile.aligned.faa");
+	
+	unless ( -e "$outfile.aligned.faa" ) {
+		print "Alignment was not generated. Check path to muscle aligner\n\n";
+		print "exiting...\n";
+		exit;
+	}
+}
+elsif ( $aligner eq "super5" ) { 
+	system("$muscle5exec -super5 $outfile.unaligned.faa -output $outfile.aligned.faa");
+	
+	unless ( -e "$outfile.aligned.faa" ) {
+		print "Alignment was not generated. Check path to muscle aligner\n\n";
+		print "exiting...\n";
+		exit;
+	}
+}
+elsif ( $aligner eq "protaln" ) {
+	# copy the protein alignment file to $outfile.aligned.faa
+	system("cp $protalnfile $outfile.aligned.faa");
+}
 else {
-	# muscle is the default aligner
+	# muscle v3 is the default aligner (program has been tested on muscle v 3.8.31)
 	#  -- will use regardless of whether or not --muscle is passed
 	system("$muscleexec -in $outfile.unaligned.faa -out $outfile.aligned.faa");
 	
