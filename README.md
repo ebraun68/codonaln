@@ -10,13 +10,15 @@ awk programs to convert file formats.
 A perl program that translates a set of nucleotide sequences passed as a fasta file,
 aligns the amino acid sequences using muscle (https://www.drive5.com/muscle/) or mafft 
 (https://mafft.cbrc.jp/), and uses the amino acid alignment to produce a codon level
-alignment. The program defaults to muscle. The path to the alignment programs must be
-muscle or mafft (although this can be changed).
+alignment. The program defaults to version 3 of muscle (although it can also be used
+with version 5 of muscle) The path to the executables of the alignment programs must be 
+muscle or mafft, although this can be changed (see below). The program can also use a
+protein sequence alignment supplied by the user.
 
 The philosopy of this program is to tolerate ambiguous codons and stop codons. They 
 are translated as X in the file used as input for the aligner. Some analytical programs
 do not tolerate in frame stop codons, so users should exercise caution if any are
-present in the alignment.
+present in the alignment. The program uses the standard genetic code: https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1)
 
 Minimal usage is:
 
@@ -39,17 +41,35 @@ NTGNTTTNTTTTCATTTCAGCAGAGTATTTTTTNTCACCATCATGGCCTA
 TGACCGGTACATTGCCATCTGCAAACC
 ```
 
-You should use the multiline fasta mode:
+You should use the multiline fasta mode or clean multiline fasta mode:
 
 ```
 perl codon_align.pl input.fasta output -M
 ```
+or
+```
+perl codon_align.pl input.fasta output -MC
+```
 
-In multiline fasta mode the will convert the input fasta file to a single line fasta file
-and then proceed with the translation and alignment.
+Both multiline fasta modes will convert the input fasta file to a single line fasta file
+before proceeding with the translation and alignment. Clean multiline fasta mode will
+remove the single line fasta file.
 
+To use mafft or version 5 of muscle the user must specify the alignment method:
 
-  
+```
+perl codon_align.pl input.fasta output --mafft -M
+```
+or
+```
+perl codon_align.pl input.fasta output --muscle5 -M
+```
+or
+```
+perl codon_align.pl input.fasta output --super5 -M
+```
+(--muscle5 uses muscle -align and --super5 uses the faster muscle -super5 mode)
+
 --------------------------------------------------------------------------------
 ### checkframe.pl
 
