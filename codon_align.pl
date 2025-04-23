@@ -118,11 +118,8 @@ if ( @ARGV > 3 ) {
 	if ( $ARGV[3] eq "--multiclean" || $ARGV[3] eq "-MC" ) { $multiline=1; $clean=1; }
 }
 if ( @ARGV > 4 ) {
-	if ( $ARGV[4] eq "--mafft" ) { $aligner="mafft"; }
-	if ( $ARGV[4] eq "--check" ) { $aligner="check"; }
-	if ( $ARGV[4] eq "--muscle5" ) { $aligner="muscle5"; }
-	if ( $ARGV[4] eq "--super5" ) { $aligner="super5"; }
-	if ( $ARGV[4] eq "--translate" ) { $aligner="translate"; }
+	# $ARGV[4] should either be the filename passed with --protaln (in which case the
+	# variable is read above) or -M, --multiline, -MC, or --multiclean.
 	if ( $ARGV[4] eq "--multiline" || $ARGV[3] eq "-M" ) { $multiline=1; }
 	if ( $ARGV[4] eq "--multiclean" || $ARGV[3] eq "-MC" ) { $multiline=1; $clean=1; }
 }
@@ -133,6 +130,10 @@ if ( $aligner eq "protaln" && "$protalnfile" eq "$outfile.aligned.faa" ) {
 	print "exiting...\n";
 	exit;
 }
+
+# Note that it is possible to pass multiple aligner names; this would be an error that
+# the program does not check, although the run will tell the user which aligner has been
+# chosen.
 
 
 ############################################################################
