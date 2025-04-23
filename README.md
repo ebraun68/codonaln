@@ -72,7 +72,7 @@ remove the single line fasta file. Note that multiline mode does not alter a sin
 fasta file, so routinely using -MC will allow the program to use either type of file without 
 saving any new files.
 
-## Alignment programs
+#### Alignment programs
 
 The default alignment program is version 3 of muscle (the program has been tested with 
 muscle v3.8.31). The system call for muscle is: muscle -in unaligned.faa -out aligned.faa 
@@ -80,21 +80,21 @@ muscle v3.8.31). The system call for muscle is: muscle -in unaligned.faa -out al
 alignment programs are used as follows (I have assumed that the program is run in -MC mode, 
 which is robust to single line or multiline fasta files):
 
-# 1. mafft -
+#### 1. mafft -
 Align using the command: mafft --auto unaligned.faa > aligned.faa
 
 ```
 perl codon_align.pl input.fasta output --mafft -MC
 ```
 
-# 2. muscle v5 with align mode -
+#### 2. muscle v5 with align mode -
 Align using the command: muscle -align unaligned.faa -output aligned.faa
 
 ```
 perl codon_align.pl input.fasta output --muscle5 -MC
 ```
 
-# 3. muscle v5 with super5 mode -
+#### 3. muscle v5 with super5 mode -
 Align using the command: muscle -super5 unaligned.faa -output aligned.faa
 (-super5 can be used with large alignments when -align is too slow)
 
@@ -106,7 +106,7 @@ Note that the paths to the aligners (stored in the variables $muscleexec, $muscl
 $mafftexec) may need to be changed, depending on the locations and names of the relevant
 programs on your system.
 
-# 4. User supplied protein alignment -
+#### 4. User supplied protein alignment -
 
 The aligner can also be used with user supplied protein sequence alignment, as follows:
 
