@@ -68,7 +68,24 @@ or
 ```
 perl codon_align.pl input.fasta output --super5 -M
 ```
-(--muscle5 uses muscle -align and --super5 uses the faster muscle -super5 mode)
+(--muscle5 uses muscle in -align mode whereas --super5 uses the faster muscle -super5 mode)
+
+Note that the paths to the aligners (stored in the variables $muscleexec, $muscle5exec, and 
+$mafftexec) may need to be changed, depending on the locations and names of the relevant
+programs on your system.
+
+The aligner can also be used with user supplied protein sequence alignment, as follows:
+
+```
+perl codon_align.pl input.fasta output --protaln TESTatp1.protaln.faa -MC
+```
+
+The protein alignment passed with --protaln must be in aligned fasta format and it must not have
+the same name as the the aligned protein outfile (the program will print an error message and exit
+if this is the case). The program will check whether the alignment file exists but it will not 
+perform more detailed checks. If the codon aligment appears problematic you should check the protein
+alignment passed with --protaln.
+
 
 --------------------------------------------------------------------------------
 ### checkframe.pl
