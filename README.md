@@ -20,16 +20,20 @@ The philosopy of this program is to tolerate ambiguous codons and stop codons. T
 are translated as X in the file used as input for the aligner. This philosophy means
 that the user must check the reading frames of the input file of unaligned nucleotide
 sequences. The program assumes the first position of the input nucleotide fasta file
-is a first codon position and that the lengths of all input sequences are a multiple of
-three. The checkframe.pl program can can be used to check sequences and it will output 
-a file with the ends of the sequences padded with N's to create seqeunces with the 
-correct lengths (checkframe.pl minimizes the number of in frame stop codons to choose
-the appropriate frame). Note that the tolerance of stop codons means that the alignments
-are useful for phylogenetic analyses of nucleotides but some analytical programs (e.g.,
-programs to estimate the dN/dS ratio) do not tolerate in frame stop codons. Therefore, 
-users should exercise caution if any stop codons are present in the alignment. 
+is a first codon position. codon_align.pl does ot assume that the lengths of the input 
+sequences are a multiple of three; it will automatically pad the 3' end of any sequences
+that are not a multiple of three (this is likely to create an ambiguous codon, but it 
+allows any sequences to be aligned).
 
-coodonaln.pl uses the standard genetic code: https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1), 
+checkframe.pl can can be used to check sequences and it will output a file with the ends 
+of the sequences padded with N's to create seqeunces with the correct lengths (checkframe.pl 
+chooses the appropriate frame by minimizing the number of in frame stop codons). Note that
+the tolerance of stop codons means that the alignments are useful for phylogenetic analyses 
+of nucleotides but some analytical programs (e.g., programs to estimate the dN/dS ratio like
+codeml in PAML) do not tolerate in frame stop codons. Therefore, users should exercise 
+caution if there are any stop codons present in the alignment. 
+
+codon_align.pl uses the standard genetic code: https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1), 
 although an alternative genetic code can be substituted by altering the hash called %stdgencode. 
 checkframe.pl focuses on stop codons and the relevant set of stop codons is supplied by 
 the user, so it does not use a specific code.
@@ -87,6 +91,11 @@ program and different extensions:
 
 Note that the phylip format codon is alignment is actually related phylip (long sequence names 
 are tolerated) with all nucleotides on a single line. 
+
+The seq_summary.txt file is a tab-delimited text file with five columns: 1. Sequence name (Name), 
+2. the number of nucleotides in the sequence (sites), 3. whether the input sequence was a multiple 
+of three nucleotides (EndFrame), 4. number of in frame stop codons (Nstops), and 5. number of 
+ambiguous codons and stop codons (NumX).
 
 
 #### Alignment programs
