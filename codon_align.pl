@@ -55,7 +55,6 @@ if ( @ARGV < 2 || @ARGV > 6 ) {
 	print "      - pass --protaln followed by a filename to use an existing protein alignment \n";
 	print "\n      - use --translate to translate sequences without aligning\n";
 	print "      - use --check to assess numbers of in frame stop codons without aligning sequences\n";
-	print "      - use --translate to translate sequences without aligning\n";
 	print "\n      - If -M or --multiline is passed the input file can be a multiline fasta file\n";
 	print "      - The multiline fasta file will be converted to singleline and saved with the\n";
 	print "        the filename infile.singleline\n";
