@@ -1,9 +1,9 @@
 # codonaln
 Programs to align sequences while respecting codon structure.
 
-Two perl programs (to perform the alignment and one to check frames) and two
-awk programs to convert file formats. Both should work in *nix environments, 
-including MacOS.
+Two perl programs (one to perform the alignment and one to check frames) and two
+awk programs to convert file formats. The awk programs are only necessary for the
+program to check frams. All code should work in *nix environments, including MacOS.
 
 --------------------------------------------------------------------------------
 ### codon_align.pl
@@ -144,7 +144,29 @@ The protein alignment passed with --protaln must be in aligned fasta format and 
 not have the same name as the the aligned protein outfile (the program will print an error 
 message and exit if this is the case). The program will check whether the alignment file 
 exists but it will not perform more detailed checks. If the codon aligment appears problematic 
-you should check the protein alignment passed with --protaln.
+you should check the protein alignment passed with --protaln. The easiest way to generate 
+input sequences for a different alignment program is to use --translate mode (see below).
+
+#### Translate and check modes
+
+codon_align.pl can be used to translate sequences or perform some minimal checkes on a set
+of coding sequences. Typical use of translate mode is:
+
+```
+perl codon_align.pl infile.fasta outfile --translate -MC
+```
+
+This will result in a single output file, outfile.unaligned.faa, that can be used as input
+for other alignment programs.
+
+Typical use of check mode is:
+
+```
+perl codon_align.pl infile.fasta outfile --check -MC
+```
+
+This will result in a single output file, outfile.seq_summary.txt, that can be used to
+identify problematic sequences. --check mode will delete the translated outfile.unaligned.faa
 
 #### Help message
 
@@ -172,7 +194,6 @@ Usage:
 
       - use --translate to translate sequences without aligning
       - use --check to assess numbers of in frame stop codons without aligning sequences
-      - use --translate to translate sequences without aligning
 
       - If -M or --multiline is passed the input file can be a multiline fasta file
       - The multiline fasta file will be converted to singleline and saved with the
